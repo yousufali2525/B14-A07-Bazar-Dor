@@ -10,6 +10,7 @@ export default function ProfilePage() {
   const { data: session, isPending } = useSession();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -19,6 +20,10 @@ export default function ProfilePage() {
       setName(session.user.name);
     }
   }, [session, isPending, router]);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [session?.user?.image]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,14 +86,17 @@ export default function ProfilePage() {
       <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold uppercase overflow-hidden border border-emerald-200">
-            {user?.image ? (
+            {user?.image && !imageError ? (
               <img
                 src={user.image}
                 alt={user.name || "User"}
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={() => setImageError(true)}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span>{user?.name ? user.name.charAt(0) : "U"}</span>
+              <span>{user?.name ? user.name.charAt(0).toUpperCase() : "U"}</span>
             )}
           </div>
           <div>

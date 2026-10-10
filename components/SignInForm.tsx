@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import SocialButtons from "./SocialButtons";
 
 export default function SignInForm() {
+  const router = useRouter();
   const params = useSearchParams();
   const requested = params.get("redirect") ?? "/";
   const target = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/";
@@ -33,6 +34,20 @@ export default function SignInForm() {
       return;
     }
 
+    if (!email.includes("@gmail.com")) {
+      const message = "সঠিক জিমেইল দিন (@gmail.com সহ)";
+      setError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (password.length < 8) {
+      const message = "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে";
+      setError(message);
+      toast.error(message);
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -43,19 +58,21 @@ export default function SignInForm() {
       });
 
       if (res?.error) {
-        const message = res.error.message || "ইমেইল বা পাসওয়ার্ড সঠিক নয়।";
+        const message = res.error.message || "ইমেইল বা পাসওয়ার্ড মেলেনি";
         setError(message);
         toast.error(message);
         setLoading(false);
         return;
       }
 
-      toast.success("সফলভাবে সাইন ইন হয়েছে!");
-      window.location.href = target;
+      toast.success("সফলভাবে সাইন ইন হয়েছে");
+      router.push(target);
+      router.refresh();
     } catch {
-      const message = "সার্ভারে সংযোগ করা যায়নি। আবার চেষ্টা করুন।";
+      const message = "সার্ভার সংযোগ সমস্যা";
       setError(message);
       toast.error(message);
+    } finally {
       setLoading(false);
     }
   };
@@ -75,7 +92,7 @@ export default function SignInForm() {
           <input
             name="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="you@gmail.com"
             autoComplete="email"
             className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
@@ -88,7 +105,7 @@ export default function SignInForm() {
           <input
             name="password"
             type="password"
-            placeholder="আপনার পাসওয়ার্ড"
+            placeholder="কমপক্ষে ৮ অক্ষর"
             autoComplete="current-password"
             className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
@@ -100,11 +117,7 @@ export default function SignInForm() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors disabled:opacity-50"
-        >
+        <button type="submit" disabled={loading} className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors disabled:opacity-50">
           {loading ? "সাইন ইন হচ্ছে..." : "সাইন ইন"}
         </button>
       </form>
