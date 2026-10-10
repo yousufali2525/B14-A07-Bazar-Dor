@@ -4,8 +4,9 @@ import { Category, Market, Product } from "./types";
 type Raw = Record<string, any>;
 
 const BASES = [
-  process.env.NEXT_PUBLIC_API_URL_2 ?? "https://api.abcz.workers.dev/api/bazardor",
+  process.env.NEXT_PUBLIC_MAIN_API_URL ?? "https://openapi.programming-hero.com/api/bazardor",
   process.env.NEXT_PUBLIC_API_URL_1 ?? "https://api.api-store.workers.dev/api/bazardor",
+  process.env.NEXT_PUBLIC_API_URL_2 ?? "https://api.abcz.workers.dev/api/bazardor",
 ];
 
 function pick(source: Raw | undefined, keys: string[]) {

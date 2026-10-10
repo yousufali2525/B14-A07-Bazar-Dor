@@ -1,11 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 html {
   scroll-behavior: smooth;
 }
-
 @keyframes marquee {
   0% {
     transform: translateX(0%);
@@ -14,15 +12,12 @@ html {
     transform: translateX(-50%);
   }
 }
-
 .animate-marquee {
   animation: marquee 45s linear infinite;
 }
-
 .animate-marquee:hover {
   animation-play-state: paused;
 }
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -31,7 +26,6 @@ html {
     animation: none;
   }
 }
-
 .marquee-track:hover .animate-marquee {
   animation-play-state: paused;
 }

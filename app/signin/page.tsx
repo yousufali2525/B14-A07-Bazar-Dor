@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import SignInForm from "@/components/SignInForm";
-
 export default function SignInPage() {
   return (
     <div className="flex justify-center px-4 py-12">

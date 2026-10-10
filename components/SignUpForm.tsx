@@ -1,22 +1,18 @@
 "use client";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
-
 export default function SignUpForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
-
   const fail = (message: string) => {
     setError(message);
     toast.error(message);
   };
-
   const handleSocialSignIn = async (provider: "google" | "github") => {
     try {
       setSocialLoading(provider);
@@ -29,29 +25,23 @@ export default function SignUpForm() {
       setSocialLoading(null);
     }
   };
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const name = String(form.get("name") ?? "").trim();
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
-
     if (!name || !email || !password) {
       return fail("সবগুলো ঘর পূরণ করুন");
     }
-
     if (!email.includes("@gmail.com")) {
       return fail("সঠিক জিমেইল দিন (@gmail.com সহ)");
     }
-
     if (password.length < 8) {
       return fail("পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে");
     }
-
     setLoading(true);
     setError("");
-
     try {
       const res = await authClient.signUp.email({
         name,

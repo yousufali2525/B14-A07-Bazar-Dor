@@ -1,16 +1,10 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
-
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const client = new MongoClient(uri);
 const db = client.db(process.env.MONGODB_DB || "bazardor");
-
-const appURL =
-  process.env.BETTER_AUTH_URL ||
-  process.env.NEXT_PUBLIC_APP_URL ||
-  "http://localhost:3000";
-
+const appURL = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL ||  "http://localhost:3000";
 export const auth = betterAuth({
   database: mongodbAdapter(db),
   baseURL: appURL,
