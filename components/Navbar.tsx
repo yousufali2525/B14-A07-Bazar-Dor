@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { signOut, useSession } from "@/lib/auth-client";
 import { getCategories } from "@/lib/api";
 import { Category } from "@/lib/types";
@@ -16,12 +16,12 @@ export default function Navbar({
   categories?: Category[];
 } = {}) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const currentCategory = searchParams.get("category");
 
   const [banglaDate, setBanglaDate] = useState<string>("");
   const { data: session } = useSession();
-  const [categories, setCategories] = useState<Category[]>(initialCategories || []);
+  const [categories, setCategories] = useState<Category[]>(
+    initialCategories || []
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -147,7 +147,9 @@ export default function Navbar({
                         onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-2.5 text-[15px] font-medium text-slate-800 hover:text-emerald-700 transition-colors cursor-pointer w-full"
                       >
-                        <span className="text-base leading-none select-none">👤</span>
+                        <span className="text-base leading-none select-none">
+                          👤
+                        </span>
                         <span>আমার প্রোফাইল</span>
                       </Link>
 
@@ -156,7 +158,9 @@ export default function Navbar({
                         onClick={handleSignOut}
                         className="flex items-center gap-2.5 text-[15px] font-medium text-rose-600 hover:text-rose-700 transition-colors cursor-pointer w-full text-left"
                       >
-                        <span className="text-base leading-none select-none font-bold">↩</span>
+                        <span className="text-base leading-none select-none font-bold">
+                          ↩
+                        </span>
                         <span>সাইন আউট</span>
                       </button>
                     </div>
@@ -183,18 +187,17 @@ export default function Navbar({
         </div>
       </div>
 
+      {/* ক্যাটাগরি বার */}
       <div className="bg-slate-50/80 border-t border-b border-slate-200/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <nav className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-2.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {categories.map((cat) => {
-              const isActive =
-                currentCategory === cat.slug ||
-                pathname === `/category/${cat.slug}`;
+              const isActive = pathname === `/category/${cat.slug}`;
 
               return (
                 <Link
                   key={cat.slug}
-                  href={`/?category=${cat.slug}`}
+                  href={`/category/${cat.slug}`}
                   className={`group flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-150 flex-shrink-0 ${
                     isActive
                       ? "bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-600 font-semibold"
@@ -208,7 +211,7 @@ export default function Navbar({
                   >
                     {cat.icon}
                   </span>
-                  <span>{cat.nameBn || (cat as any).name}</span>
+                  <span>{cat.name}</span>
                 </Link>
               );
             })}
