@@ -1,14 +1,11 @@
 import { parseNum } from "./bn";
 import { Category, Market, Product } from "./types";
-
 type Raw = Record<string, any>;
-
 const BASES = [
   process.env.NEXT_PUBLIC_MAIN_API_URL ?? "https://openapi.programming-hero.com/api/bazardor",
   process.env.NEXT_PUBLIC_API_URL_1 ?? "https://api.api-store.workers.dev/api/bazardor",
   process.env.NEXT_PUBLIC_API_URL_2 ?? "https://api.abcz.workers.dev/api/bazardor",
 ];
-
 function pick(source: Raw | undefined, keys: string[]) {
   for (const key of keys) {
     const value = source?.[key];
@@ -16,7 +13,6 @@ function pick(source: Raw | undefined, keys: string[]) {
   }
   return undefined;
 }
-
 async function request(path: string) {
   for (const base of BASES) {
     try {
@@ -26,7 +22,6 @@ async function request(path: string) {
   }
   return null;
 }
-
 function toList(json: any): Raw[] {
   if (Array.isArray(json)) return json;
   if (!json || typeof json !== "object") return [];
@@ -35,13 +30,11 @@ function toList(json: any): Raw[] {
   }
   return [];
 }
-
 function toSingle(json: any): Raw | null {
   const data = json?.data ?? json?.product ?? json?.category ?? json;
   if (!data || typeof data !== "object" || Array.isArray(data)) return null;
   return data;
 }
-
 function readChange(raw: Raw, today: number, yesterday: number): number {
   if (raw.change && typeof raw.change === "object") {
     const pct = parseNum(raw.change.pct ?? raw.change.percent ?? raw.change.value);
@@ -54,7 +47,6 @@ function readChange(raw: Raw, today: number, yesterday: number): number {
     }
     return pct;
   }
-
   const value = pick(raw, [
     "changePercent",
     "change_percent",
@@ -63,7 +55,6 @@ function readChange(raw: Raw, today: number, yesterday: number): number {
     "changePct",
     "percent",
   ]);
-
   if (value !== undefined) {
     let n = parseNum(value);
     const text = typeof value === "string" ? value : "";
@@ -72,16 +63,13 @@ function readChange(raw: Raw, today: number, yesterday: number): number {
     else if (text.includes("▲") || /up|rise|inc/.test(dir)) n = Math.abs(n);
     return Math.round(n * 10) / 10;
   }
-
   if (today > 0 && yesterday > 0 && today !== yesterday) {
     const diff = today - yesterday;
     const calcPct = (diff / yesterday) * 100;
     return Math.round(calcPct * 10) / 10;
   }
-
   return 0;
 }
-
 function readMarkets(raw: Raw): Market[] {
   const source = pick(raw, [
     "markets",
@@ -91,7 +79,6 @@ function readMarkets(raw: Raw): Market[] {
     "marketPrices",
     "market_prices",
   ]);
-
   if (Array.isArray(source)) {
     return source
       .map((m: Raw) => {
@@ -99,13 +86,11 @@ function readMarkets(raw: Raw): Market[] {
         const minVal = parseNum(pick(m, ["min", "minPrice", "min_price"]));
         const maxVal = parseNum(pick(m, ["max", "maxPrice", "max_price"]));
         let p = parseNum(pick(m, ["price", "value", "rate", "amount"]));
-
         if (p <= 0 && minVal > 0 && maxVal > 0) {
           p = Math.round((minVal + maxVal) / 2);
         } else if (p <= 0 && minVal > 0) {
           p = minVal;
         }
-
         return {
           name,
           price: p,
@@ -116,10 +101,8 @@ function readMarkets(raw: Raw): Market[] {
       })
       .filter((m) => m.price > 0 || m.min > 0);
   }
-
   return [];
 }
-
 function formatUnitName(unitRaw: any): string {
   if (!unitRaw) return "প্রতি কেজি";
   const str = String(unitRaw).toLowerCase().trim();
@@ -130,12 +113,10 @@ function formatUnitName(unitRaw: any): string {
   if (str === "hali" || str === "হালি") return "প্রতি হালি";
   return String(unitRaw).startsWith("প্রতি") ? String(unitRaw) : `প্রতি ${unitRaw}`;
 }
-
 export function normalizeProduct(raw: Raw): Product {
   const markets = readMarkets(raw);
   const prices = markets.map((m) => m.price).filter((p) => p > 0);
   const average = prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0;
-
   const today = parseNum(
     pick(raw, [
       "today",
@@ -148,26 +129,18 @@ export function normalizeProduct(raw: Raw): Product {
       "averagePrice",
     ])
   );
-
   const yesterday = parseNum(
     pick(raw, ["yesterday", "yesterdayPrice", "yesterday_price", "previousPrice", "prevPrice", "lastWeek"])
   );
-
   const price = today > 0 ? today : average;
   const change = readChange(raw, price, yesterday);
-
   const categoryRaw = pick(raw, ["category", "categorySlug", "category_slug"]);
   const category =
-    categoryRaw && typeof categoryRaw === "object"
-      ? String(pick(categoryRaw, ["slug", "id"]) ?? "")
-      : String(categoryRaw ?? "");
-
+    categoryRaw && typeof categoryRaw === "object"? String(pick(categoryRaw, ["slug", "id"]) ?? ""): String(categoryRaw ?? "");
   const id = String(pick(raw, ["id", "_id", "slug"]) ?? "");
   const slug = String(pick(raw, ["slug", "id", "_id"]) ?? id);
-
   const allMins = markets.map((m: any) => m.min).filter((n) => typeof n === "number" && n > 0);
   const allMaxs = markets.map((m: any) => m.max).filter((n) => typeof n === "number" && n > 0);
-
   return {
     id,
     slug,
@@ -187,7 +160,6 @@ export function normalizeProduct(raw: Raw): Product {
     avg: parseNum(pick(raw, ["avgPrice", "averagePrice", "avg_price", "avg"])) || average || price,
   };
 }
-
 export function normalizeCategory(raw: Raw): Category {
   const slug = String(pick(raw, ["slug", "id", "_id"]) ?? "");
   return {
@@ -196,13 +168,11 @@ export function normalizeCategory(raw: Raw): Category {
     icon: String(pick(raw, ["icon", "emoji", "image", "categoryIcon"]) ?? "🛒"),
   };
 }
-
 export async function getProducts(category?: string): Promise<Product[]> {
   const path = category && category !== "all" ? `/products?category=${encodeURIComponent(category)}` : "/products";
   const json = await request(path);
   return toList(json).map(normalizeProduct);
 }
-
 export async function getProduct(slug: string): Promise<Product | null> {
   const isNumeric = /^\d+$/.test(slug);
   if (isNumeric) {
@@ -210,24 +180,20 @@ export async function getProduct(slug: string): Promise<Product | null> {
     const raw = toSingle(json);
     if (raw && !raw.error) return normalizeProduct(raw);
   }
-
   const all = await getProducts();
   const match = all.find(
     (p) => p.slug === slug || String(p.id) === String(slug)
   );
   if (match) return match;
-
   const json = await request(`/products/${encodeURIComponent(slug)}`);
   const raw = toSingle(json);
   if (!raw || raw.error) return null;
   return normalizeProduct(raw);
 }
-
 export async function getCategories(): Promise<Category[]> {
   const json = await request("/categories");
   return toList(json).map(normalizeCategory);
 }
-
 export async function getCategory(slug: string): Promise<Category | null> {
   const json = await request(`/categories/${encodeURIComponent(slug)}`);
   const raw = toSingle(json);

@@ -20,10 +20,7 @@ export default function Ticker({ products }: { products: Product[] }) {
               className="inline-flex items-center gap-2 px-5 border-r border-slate-200/80 whitespace-nowrap text-xs sm:text-sm text-slate-800">
               <span className="text-base">{item.emoji || "🛒"}</span>
               <span className="font-semibold text-slate-900">{item.name}</span>
-              <span className="text-slate-700">
-                {toBn(item.price)} টাকা/{unitStr}
-              </span>
-
+              <span className="text-slate-700"> {toBn(item.price)} টাকা/{unitStr}  </span>
               {isUp && (
                 <span className="font-bold text-rose-600 inline-flex items-center gap-0.5"> ▲ {absPct}% </span> )}
               {isDown && (

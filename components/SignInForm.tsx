@@ -17,36 +17,30 @@ export default function SignInForm() {
       toast.error("এই পাতা দেখতে আগে সাইন ইন করুন", { id: "protected" });
     }
   }, [params]);
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => { e.preventDefault();
     const form = new FormData(e.currentTarget);
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
-
     if (!email || !password) {
       const message = "ইমেইল ও পাসওয়ার্ড দিন";
       setError(message);
       toast.error(message);
       return;
     }
-
     if (!email.includes("@gmail.com")) {
       const message = "সঠিক জিমেইল দিন (@gmail.com সহ)";
       setError(message);
       toast.error(message);
       return;
     }
-
     if (password.length < 8) {
       const message = "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে";
       setError(message);
       toast.error(message);
       return;
     }
-
     setLoading(true);
     setError("");
-
     try {
       const res = await authClient.signIn.email({ email,password,});
       if (res?.error) {

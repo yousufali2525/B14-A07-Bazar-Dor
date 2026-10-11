@@ -1,16 +1,12 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getBanglaDate } from "@/lib/bn";
-
 export default function Hero() {
   const [banglaDate, setBanglaDate] = useState<string>("");
-
   useEffect(() => {
     setBanglaDate(getBanglaDate());
   }, []);
-
   return (
     <div className="bg-[#f2f7f4] py-8 sm:py-12 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
@@ -19,19 +15,12 @@ export default function Hero() {
             <div className="inline-block px-3.5 py-1 rounded-full bg-[#dcfce7] text-[#166534] text-xs font-semibold mb-4">
               {banglaDate || "আজকের বাজার দর"}
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-snug tracking-tight">
-              আজকের বাজারের দাম এক নজরে
-            </h1>
-            <p className="mt-3.5 text-xs sm:text-sm text-slate-500 leading-relaxed max-w-xl font-normal">
-              চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম — বাজারভিত্তিক বিস্তারিত, গড়, সর্বনিম্ন-সর্বাধিক এবং দামের পরিবর্তন এক জায়গায়।
-            </p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-snug tracking-tight">আজকের বাজারের দাম এক নজরে</h1>
+            <p className="mt-3.5 text-xs sm:text-sm text-slate-500 leading-relaxed max-w-xl font-normal">চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম — বাজারভিত্তিক বিস্তারিত, গড়, সর্বনিম্ন-সর্বাধিক এবং দামের পরিবর্তন এক জায়গায়।</p>
             <div className="mt-6 sm:mt-8">
               <a
                 href="#সব-পণ্য"
-                className="inline-block px-5 py-2.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-medium text-sm shadow-[0_2px_8px_rgba(5,150,105,0.25)] transition-colors"
-              >
-                সব পণ্য দেখুন
-              </a>
+                className="inline-block px-5 py-2.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-medium text-sm shadow-[0_2px_8px_rgba(5,150,105,0.25)] transition-colors">সব পণ্য দেখুন</a>
             </div>
           </div>
           <div className="flex-shrink-0 w-64 sm:w-80 md:w-96 flex items-center justify-center">
@@ -41,8 +30,7 @@ export default function Hero() {
               width={380}
               height={300}
               priority
-              className="w-full h-auto object-contain select-none"
-            />
+              className="w-full h-auto object-contain select-none"/>
           </div>
         </div>
       </div>
