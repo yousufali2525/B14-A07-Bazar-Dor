@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { signOut, useSession } from "@/lib/auth-client";
 import { getCategories } from "@/lib/api";
 import { Category } from "@/lib/types";
@@ -16,6 +16,9 @@ export default function Navbar({
   categories?: Category[];
 } = {}) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get("category");
+
   const [banglaDate, setBanglaDate] = useState<string>("");
   const { data: session } = useSession();
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
@@ -75,8 +78,8 @@ export default function Navbar({
   const firstName = displayName.split(" ")[0];
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3 select-none group">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition-transform">
@@ -115,45 +118,45 @@ export default function Navbar({
                         src={session.user.image}
                         alt={displayName}
                         referrerPolicy="no-referrer"
-                        crossOrigin="anonymous"
-                        onError={() => setImageError(true)}
                         className="w-full h-full object-cover"
+                        onError={() => setImageError(true)}
                       />
                     ) : (
-                      <span>{displayName.charAt(0).toUpperCase()}</span>
+                      <span>{firstName.charAt(0).toUpperCase()}</span>
                     )}
                   </div>
-                  <span className="hidden sm:inline-block font-semibold text-sm text-slate-800 max-w-[120px] truncate">
+                  <span className="hidden sm:inline-block text-sm font-semibold text-slate-700 max-w-[120px] truncate">
                     {firstName}
                   </span>
-                  <span className="text-slate-400 text-xs">▾</span>
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white p-5 shadow-2xl border border-slate-100 z-50">
-                    <div className="pb-3 border-b border-slate-100">
-                      <h4 className="font-bold text-slate-900 text-sm leading-tight">
+                  <div className="absolute right-0 mt-2.5 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-5 pb-8 z-50 animate-in fade-in zoom-in-95 duration-150 origin-top-right">
+                    <div>
+                      <h4 className="text-base font-bold text-slate-900 leading-snug truncate">
                         {displayName}
                       </h4>
-                      <p className="text-xs text-slate-400 mt-1 truncate">
+                      <p className="text-sm text-slate-500 leading-normal truncate mt-0.5">
                         {session.user.email}
                       </p>
                     </div>
-                    <div className="pt-3 space-y-1">
+
+                    <div className="mt-5 space-y-3.5">
                       <Link
                         href="/profile"
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-700 rounded-xl transition-colors"
+                        className="flex items-center gap-2.5 text-[15px] font-medium text-slate-800 hover:text-emerald-700 transition-colors cursor-pointer w-full"
                       >
-                        <span className="text-blue-600 text-sm">👤</span>
+                        <span className="text-base leading-none select-none">👤</span>
                         <span>আমার প্রোফাইল</span>
                       </Link>
+
                       <button
                         type="button"
                         onClick={handleSignOut}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs sm:text-sm font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left cursor-pointer"
+                        className="flex items-center gap-2.5 text-[15px] font-medium text-rose-600 hover:text-rose-700 transition-colors cursor-pointer w-full text-left"
                       >
-                        <span className="text-rose-600 text-sm">↩</span>
+                        <span className="text-base leading-none select-none font-bold">↩</span>
                         <span>সাইন আউট</span>
                       </button>
                     </div>
@@ -163,14 +166,14 @@ export default function Navbar({
             ) : (
               <div className="flex items-center gap-2">
                 <Link
-                  href="/sign-in"
-                  className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors"
+                  href="/signin"
+                  className="px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
                 >
-                  লগইন
+                  সাইন ইন
                 </Link>
                 <Link
-                  href="/sign-up"
-                  className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+                  href="/signup"
+                  className="px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition-colors"
                 >
                   সাইন আপ
                 </Link>
@@ -178,37 +181,39 @@ export default function Navbar({
             )}
           </div>
         </div>
+      </div>
 
-        {categories.length > 0 && (
-          <div className="overflow-x-auto no-scrollbar py-2 border-t border-slate-100 flex items-center gap-2">
-            <Link
-              href="/"
-              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
-                pathname === "/"
-                  ? "bg-emerald-600 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              সব পণ্য
-            </Link>
+      <div className="bg-slate-50/80 border-t border-b border-slate-200/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <nav className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-2.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {categories.map((cat) => {
-              const isActive = pathname === `/category/${cat.slug}`;
+              const isActive =
+                currentCategory === cat.slug ||
+                pathname === `/category/${cat.slug}`;
+
               return (
                 <Link
-                  key={cat.id || cat.slug}
-                  href={`/category/${cat.slug}`}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                  key={cat.slug}
+                  href={`/?category=${cat.slug}`}
+                  className={`group flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-150 flex-shrink-0 ${
                     isActive
-                      ? "bg-emerald-600 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      ? "bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-600 font-semibold"
+                      : "bg-white text-slate-700 hover:text-emerald-700 hover:bg-emerald-50/70 border border-slate-200/90 hover:border-emerald-200 shadow-[0_1px_2px_rgba(0,0,0,0.03)] font-medium"
                   }`}
                 >
-                  {cat.name}
+                  <span
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-transform group-hover:scale-110 ${
+                      isActive ? "bg-white/20" : "bg-slate-100"
+                    }`}
+                  >
+                    {cat.icon}
+                  </span>
+                  <span>{cat.nameBn || (cat as any).name}</span>
                 </Link>
               );
             })}
-          </div>
-        )}
+          </nav>
+        </div>
       </div>
     </header>
   );
