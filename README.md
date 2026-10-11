@@ -17,7 +17,7 @@
 
 ## 🔗 গুরুত্বপূর্ণ লিঙ্কসমূহ (Important Links)
 
-- **🌐 লাইভ ওয়েবসাইট (Live URL):** [(https://b14-a07-bazar-8bmj9r35p-22-cc8a.vercel.app/)]
+- **🌐 লাইভ ওয়েবসাইট (Live URL):** [(https://b14-a07-bazar-dor.vercel.app/)]
 - **💻 গিটহাব রিপোজিটরি (GitHub Repo):** [(https://github.com/yousufali2525/B14-A07-Bazar-Dor.git)]
 
 ---
